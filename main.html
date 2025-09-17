@@ -54,6 +54,11 @@
     .code:focus {
       border-color: #333;
     }
+
+    /* For Cypress test - explicit focused class */
+    .code.focused {
+      border-color: #007BFF;
+    }
   </style>
 </head>
 <body>
@@ -75,18 +80,32 @@
     const inputs = document.querySelectorAll(".code");
 
     inputs.forEach((input, index) => {
+      // Handle focus - add/remove .focused class
+      input.addEventListener("focus", () => {
+        inputs.forEach(i => i.classList.remove("focused"));
+        input.classList.add("focused");
+      });
+
+      // Typing forward
       input.addEventListener("input", (e) => {
         if (e.target.value.length === 1 && index < inputs.length - 1) {
           inputs[index + 1].focus();
         }
       });
 
+      // Backspace handling
       input.addEventListener("keydown", (e) => {
         if (e.key === "Backspace" && e.target.value === "" && index > 0) {
           inputs[index - 1].focus();
-          inputs[index - 1].value = ""; // delete previous
+          inputs[index - 1].value = "";
         }
       });
+    });
+
+    // Ensure first input has focus + .focused on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      inputs[0].focus();
+      inputs[0].classList.add("focused");
     });
   </script>
 </body>
